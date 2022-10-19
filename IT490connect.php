@@ -20,12 +20,5 @@ if ($mydb->errno != 0)
         echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
         exit(0);
 }
-$numrows = mysqli_num_rows($response);
 
-echo "we got $numrows from the query".PHP_EOL;
-
-while ($row = $response->fetch_row())
-{
-	"IT490connect.php" 33L, 631B
-}
 ?>
