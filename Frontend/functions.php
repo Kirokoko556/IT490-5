@@ -1,21 +1,10 @@
 <?php
 
 	session_start();
+include ../IT490connect.php
 
-   $host = "172.105.90.92";
-   $uname  = "motherla";
-   $passwd = "8ZTb[8oKs1W0r+";
-   $dbname = "motherla_EmiratiMail";
+$db = $mydb
 
-   //Creating a connection
-   $db = mysqli_connect($host, $uname, $passwd, $dbname);
-
-   if($db){
-      print("Connection Established Successfully");
-   }else{
-      print("Connection Failed ");
-   }
-   
 $FName = "";
 $LName = "";
 $Username = "";
