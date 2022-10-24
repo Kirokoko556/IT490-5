@@ -109,12 +109,12 @@
 </head> 
 <body>
     <div class="center">
-        <h1>Welcome to Emiratimail</h1>
+        <h1>Welcome to CNAZBaseballStats</h1>
         <form method="post" action= "functions.php">
 
                 <div class="txt_field">
                 <input type="text" name="LoginInfo" id="LoginInfo" required>
-                <label>Username or Email</label>
+                <label>Username</label>
                 </div>
 				
                 <div class="txt_field">
