@@ -114,7 +114,7 @@
 
                 <div class="txt_field">
                 <input type="text" name="LoginInfo" id="LoginInfo" required>
-                <label>Username</label>
+                <label>Username or Email</label>
                 </div>
 				
                 <div class="txt_field">
