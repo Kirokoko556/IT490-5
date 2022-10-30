@@ -11,6 +11,11 @@ function doLogin($username,$password)
     // check password
     return true;
     //return false if not valid
+    else
+    {
+      echo("Username and password combination not found");
+      return false;
+    }
 }
 
 function requestProcessor($request)
