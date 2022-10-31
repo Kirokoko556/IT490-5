@@ -12,7 +12,7 @@ function doLogin($username,$password)
 	$stmt = mysqli_stmt_init($mydb);
 	if (!mysql_stmt_init($stmt, $sql))
 	{
-		header("location: ../signup.php=stmtfailed");
+		header("location: ../login.php=wronglogin");
 		return false;
 		exit();
 	}
