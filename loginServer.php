@@ -21,7 +21,7 @@ function doLogin($username,$password)
 	if ($password !== $pwd)
         {
 		header("location: ../login.php?error=wronglogin");
-		return false:
+		return false;
 		exit();
 	}
          else
