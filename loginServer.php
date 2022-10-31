@@ -13,6 +13,7 @@ function doLogin($username,$password)
 	if (!mysql_stmt_init($stmt, $sql))
 	{
 		header("location: ../login.php=wronglogin");
+		print("username not found");
 		return false;
 		exit();
 	}
@@ -21,11 +22,13 @@ function doLogin($username,$password)
 	if ($password !== $pwd)
         {
 		header("location: ../login.php?error=wronglogin");
+		print("incorrect password");
 		return false;
 		exit();
 	}
          else
-         {
+	 {
+		 print("login successful");
 		 return true;
 	 }
 }
