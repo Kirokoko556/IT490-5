@@ -7,15 +7,27 @@ require_once("IT490connect.inc.php");
 
 function doLogin($username,$password)
 {
-    // lookup username in databas
-    // check password
-    return true;
-    //return false if not valid
-    else
-    {
-      echo("Username and password combination not found");
-      return false;
-    }
+    // lookup username in database
+	$sql = "select * from users where username = $username";
+	$stmt = mysqli_stmt_init($mydb);
+	if (!mysql_stmt_init($stmt, $sql))
+	{
+		header("location: ../signup.php=stmtfailed");
+		return false;
+		exit();
+	}
+	// check password
+	$pwd = "select password from users where username = $username";
+	if ($password !== $pwd)
+        {
+		header("location: ../login.php?error=wronglogin");
+		return false:
+		exit();
+	}
+         else
+         {
+		 return true;
+	 }
 }
 
 function requestProcessor($request)
