@@ -1,7 +1,7 @@
 <?php
 
 	session_start();
-include ../IT490connect.php
+require_once"(IT490connect.inc.php");
 
 $db = $mydb
 
@@ -25,7 +25,7 @@ if (isset($_POST['register'])) {
 // 										<!--- need to send the following items to database: Admin	Username	Email	Password	First Name	Last Name --->
 		if (isset($_POST['Admin'])) {
 			$Admin = e($_POST['Admin']);
-			$query = "INSERT INTO `EmployeeInfo` (`EmployeeID`, `Admin`, `Username`, `Email`, `Password`, `First Name`, `Last Name`) VALUES (NULL, '$Admin', '$Username', '$Email', '$Password', '$FName', '$LName');";
+			$query = "INSERT INTO `users` (`EmployeeID`, `Admin`, `Username`, `Email`, `Password`, `First Name`, `Last Name`) VALUES (NULL, '$Admin', '$Username', '$Email', '$Password', '$FName', '$LName');";
 					 
 			mysqli_query($db, $query);
 			$_SESSION['success']  = "New user successfully created!!";
