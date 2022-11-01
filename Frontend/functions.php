@@ -5,20 +5,20 @@ require_once("IT490connect.inc.php");
 
 $db = $mydb
 
-$FName = "";
-$LName = "";
-$Username = "";
+$firstName = "";
+$lastName = "";
+$username = "";
 $email    = "";
 $errors   = array(); 
 
 if (isset($_POST['register'])) {
 
-	global $db, $errors, $Username, $email, $FName, $LName;
-	$FName       =  e($_POST['FName']);
-	$LName       =  e($_POST['LName']);
-	$Username       =  e($_POST['Username']);
-	$Email       =  e($_POST['Email']);
-	$Password  =  e($_POST['Password']);
+	global $db, $errors, $username, $email, $firstName, $lastName;
+	$firstName       =  e($_POST['firstName']);
+	$lastName       =  e($_POST['lastName']);
+	$username       =  e($_POST['username']);
+	$email       =  e($_POST['email']);
+	$password  =  e($_POST['password']);
 
 	if (count($errors) == 0) {
 		$Password = md5($Password);
