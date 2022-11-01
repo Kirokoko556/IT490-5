@@ -1,7 +1,7 @@
 <?php
 
 	session_start();
-require_once"(IT490connect.inc.php");
+require_once("IT490connect.inc.php");
 
 $db = $mydb
 
