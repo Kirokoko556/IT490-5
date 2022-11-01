@@ -5,6 +5,8 @@ require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 include("IT490connect.inc.php");
 
+$mydb = new mysqli('127.0.0.1','carter','abcde','IT490');
+
 function doLogin($username,$password)
 {
     // lookup username in database
