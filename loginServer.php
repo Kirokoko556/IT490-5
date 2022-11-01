@@ -3,14 +3,14 @@
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
-require_once("IT490connect.inc.php");
+include("IT490connect.inc.php");
 
 function doLogin($username,$password)
 {
     // lookup username in database
 	$sql = "select * from users where username = $username";
 	$stmt = mysqli_stmt_init($mydb);
-	if (!mysql_stmt_init($stmt, $sql))
+	if (!mysqli_stmt_prepare($stmt, $sql))
 	{
 		header("location: ../login.php=wronglogin");
 		print("username not found");
