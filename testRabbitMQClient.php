@@ -8,15 +8,16 @@ $firstName = "";
 $lastName = "";
 $username = "";
 $email    = "";
+$password = "";
 $errors   = array();
 
-	global $db, $errors, $username, $email, $firstName, $lastName;
-	
-	$firstName       =  e($_POST['firstName']);
-	$lastName       =  e($_POST['lastName']);
-	$username       =  e($_POST['username']);
-	$email       =  e($_POST['email']);
-	$password  =  e($_POST['password']);
+global $db, $errors, $username, $email, $firstName, $lastName, $password;
+
+$firstName       =  e($_POST['firstName']);
+$lastName       =  e($_POST['lastName']);
+$username       =  e($_POST['username']);
+$email       =  e($_POST['email']);
+$password  =  e($_POST['password']);
 
 $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
 if (isset($argv[1]))
@@ -30,8 +31,8 @@ else
 
 $request = array();
 $request['type'] = "login";
-$request['Username'] = "ali";
-$request['password'] = "Raza44";
+$request['username'] = $username;
+$request['password'] = $password;
 $request['message'] = $msg;
 $response = $client->send_request($request);
 //$response = $client->publish($request);

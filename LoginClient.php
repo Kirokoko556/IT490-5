@@ -1,5 +1,7 @@
-#!/usr/bin/php
 <?php
+
+session_start();
+
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
@@ -9,15 +11,12 @@ $lastName = "";
 $username = "";
 $email    = "";
 $password = "";
-$errors   = array();
 
-global $db, $errors, $username, $email, $firstName, $lastName;
-
-$firstName       =  e($_POST['firstName']);
-$lastName       =  e($_POST['lastName']);
-$username       =  e($_POST['username']);
-$email       =  e($_POST['email']);
-$password  =  e($_POST['password']);
+global $db, $username, $password;
+$password  =  e($_POST['Password']);
+echo $password;
+$username = e($_POST['LoginInfo']);
+echo $username;
 
 $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
 if (isset($argv[1]))
@@ -31,7 +30,7 @@ else
 
 $request = array();
 $request['type'] = "login";
-$request['Username'] = $username;
+$request['username'] = $username;
 $request['password'] = $password;
 $request['message'] = $msg;
 $response = $client->send_request($request);
@@ -39,7 +38,8 @@ $response = $client->send_request($request);
 
 echo "client received response: ".PHP_EOL;
 print_r($response);
+
 echo "\n\n";
 
 echo $argv[0]." END".PHP_EOL;
-
+?>
