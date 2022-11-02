@@ -109,7 +109,7 @@
 </head>
 <body>
     <div class="center">
-        <h1>Welcome to CNAZBaseballStats</h1>
+        <h1>Welcome to CNAZ Weather on Demand!</h1>
         <form method="post" action= "../testRabbitMQClient.php">
 
                 <div class="txt_field">
