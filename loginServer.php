@@ -28,7 +28,7 @@ function doLogin($username,$password)
 			exit();
 		}
 	}
-        return true;
+        return "Login successful";
 }
 
 function requestProcessor($request)
