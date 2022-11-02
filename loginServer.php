@@ -13,7 +13,7 @@ function doLogin($username,$password)
 	$usrquery = mysqli_fetch_assoc($uquery);
 	if ($usrquery == Null)
 	{
-		return "Username not found";
+		return false;
 		exit();
 	}
 	// check password
@@ -24,11 +24,11 @@ function doLogin($username,$password)
 	{
 		if ($password !== $value)
         	{
-			return "Pasword not found";
+			return false;
 			exit();
 		}
 	}
-        return "Login successful";
+        return true;
 }
 
 function requestProcessor($request)
