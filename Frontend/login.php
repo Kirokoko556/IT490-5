@@ -72,7 +72,7 @@
     }
     .txt_field input:focus ~ span::before,
     .txt_field input:focus ~ span::before{
-      width: 100px;   
+      width: 100px;
     }
     .pass{
       margin: -5px 0 20px 5px;
@@ -106,17 +106,16 @@
     }
 
     </style>
-</head> 
+</head>
 <body>
     <div class="center">
         <h1>Welcome to CNAZBaseballStats</h1>
-        <form method="post" action= "../LoginClient.php">
+        <form method="post" action= "../testRabbitMQClient.php">
 
                 <div class="txt_field">
                 <input type="text" name="LoginInfo" id="LoginInfo" required>
                 <label>Username or Email</label>
                 </div>
-				
                 <div class="txt_field">
                 <input type="password" name="Password" id="Password" required>
                 <label>Password</label>
