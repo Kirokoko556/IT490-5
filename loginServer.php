@@ -3,35 +3,32 @@
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
-include("IT490connect.inc.php");
 
 function doLogin($username,$password)
 {
-    // lookup username in database
-	$sql = "select * from users where username = $username";
+	// lookup username in database
 	$mydb = new mysqli('127.0.0.1','carter','abcde','IT490');
-	$stmt = mysqli_stmt_init($mydb);
-	if (!mysqli_stmt_prepare($stmt, $sql))
+	$usr = "select username from users where username ='$username'";
+	$uquery = mysqli_query($mydb,$usr);
+	$usrquery = mysqli_fetch_assoc($uquery);
+	if ($usrquery == Null)
 	{
-		header("location: ../login.php=wronglogin");
-		print("username not found");
-		return false;
+		return "Username not found";
 		exit();
 	}
 	// check password
-	$pwd = "select password from users where username = $username";
-	if ($password !== $pwd)
-        {
-		header("location: ../login.php?error=wronglogin");
-		print("incorrect password");
-		return false;
-		exit();
+	$pwd = "select password from users where username ='$username'";
+	$pquery = mysqli_query($mydb,$pwd);
+	$pwdquery = mysqli_fetch_assoc($pquery);
+	foreach($pwdquery as $key => $value)
+	{
+		if ($password !== $value)
+        	{
+			return "Pasword not found";
+			exit();
+		}
 	}
-         else
-	 {
-		 print("login successful");
-		 return true;
-	 }
+        return "Login successful";
 }
 
 function requestProcessor($request)
@@ -45,7 +42,7 @@ function requestProcessor($request)
   switch ($request['type'])
   {
     case "login":
-      return doLogin($request['Username'],$request['password']);
+      return doLogin($request["username"],$request["password"]);
     case "validate_session":
       return doValidate($request['sessionId']);
   }
