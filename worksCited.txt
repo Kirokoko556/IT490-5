@@ -1,2 +1,2 @@
 Logging System: Youtube- Christian Augusto Romero Goyzueta II: Rsyslog Server and Client - Ubuntu Server 20.04
-
+Nagios: Youtube - Happy Ghost: How to Install and configure Nagios Monitoring Server on Ubuntu
