@@ -126,24 +126,24 @@
 		<!--- need to ask for the following items: Admin	Username	Email	Password	First Name	Last Name --->
         <form method="post" action= "functions.php">
                 <div class="txt_field">
-                <input type="text" name="FName" id="FName" required>
+                <input type="text" name="firstname" id="firstname" required>
                 <label>Please enter your first name.</label>
                 </div>
 				<div class="txt_field">
-                <input type="text" name="LName" id="LName" required>
+                <input type="text" name="lastname" id="lastname" required>
                 <label>Please enter your last name.</label>
                 </div>
 				<div class="txt_field">
-                <input type="text" name="Username" id="Username" required>
+                <input type="text" name="username" id="username" required>
                 <label>Please choose your username.</label>
                 </div>
                 <div class="txt_field">
-                <input type="text" name="Email" id="Email" required>
+                <input type="text" name="email" id="email" required>
                 <label>Please enter a valid email.</label>
                 </div>
 			    
                 <div class="txt_field">
-                <input type="password" name="Password" id="Password" onkeyup='check();' required>
+                <input type="password" name="password" id="password" onkeyup='check();' required>
                 <label>Enter a new password.</label>
                 </div>
 				<div class="txt_field">
