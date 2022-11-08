@@ -4,31 +4,58 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
-function doSignup($username,$password)
+function doSignup($username,$password,$firstname,$lastname,$email)
 {
-	// lookup username in database
+	// connect to database
 	$mydb = new mysqli('127.0.0.1','carter','abcde','IT490');
-	$usr = "select username from users where username ='$username'";
-	$uquery = mysqli_query($mydb,$usr);
-	$usrquery = mysqli_fetch_assoc($uquery);
-	if ($usrquery == Null)
+	// check username
+	$usr = "select username from users where username = ?;";
+	$uquery = mysqli_stmt_init($mydb);
+	if(!mysqli_stmt_prepare($uquery, $usr)
 	{
 		return false;
 		exit();
 	}
-	// check password
-	$pwd = "select password from users where username ='$username'";
-	$pquery = mysqli_query($mydb,$pwd);
-	$pwdquery = mysqli_fetch_assoc($pquery);
-	foreach($pwdquery as $key => $value)
+	mysqli_stmt_bind_param($uquery, "s", $username);
+	mysqli_stmt_execute($uquery);
+	$usrresult = mysqli_stmt_get_result($uquery);
+	if (mysqli_fetch_assoc($usrresult) !== Null)
 	{
-		if ($password !== $value)
-        	{
-			return false;
-			exit();
-		}
+		return false;
+		exit();
 	}
-        return true;
+	mysqli_stmt_close($uquery);
+	// check email
+	$e = "select email from users where email = ?;";
+	$equery = mysqli_stmt_init($mydb);
+	if(!mysqli_stmt_prepare($equery, $e)
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($equery, "s", $email);
+        mysqli_stmt_execute($equery);
+	$emailquery = mysqli_fetch_assoc($equery);
+	if (mysqli_fetch_assoc($emailresult) !== Null)
+        {
+		return false;
+		exit();
+	}
+	mysqli_stmt_close($equery);
+	//hash password
+	$hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+	// insert parameters into users table
+	$insert = "insert into users (username, password, firstName, lastName, email) values(?,?,?,?,?);";
+	$insertstmt = mysqli_stmt_init($db);
+	if (!mysqli_stmt_prepare($insertstmt, $insert)
+	{
+		return false;
+		exit();
+	}
+	mysqli_bind_param($insertstmt, "sssss", $username, $hashedpassword, $firstname, $lastname, $email);
+	mysqli_stmt_execute($insertstmt);
+	mysqli_stmt_close($insertstmt);
+	return "registration successful";
 }
 
 function requestProcessor($request)
@@ -42,7 +69,7 @@ function requestProcessor($request)
   switch ($request['type'])
   {
     case "login":
-      return doSignup($request["username"],$request["password"]);
+      return doSignup($request["username"],$request["password"], $request["firstname"], $request["lastname"], $request["email"]);
     case "validate_session":
       return doValidate($request['sessionId']);
   }

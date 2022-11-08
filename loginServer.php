@@ -8,27 +8,45 @@ function doLogin($username,$password)
 {
 	// lookup username in database
 	$mydb = new mysqli('127.0.0.1','carter','abcde','IT490');
-	$usr = "select username from users where username ='$username'";
-	$uquery = mysqli_query($mydb,$usr);
-	$usrquery = mysqli_fetch_assoc($uquery);
-	if ($usrquery == Null)
+	$usr = "select username from users where username = ?;";
+	$uquery = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($uquery, $usr)
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($uquery, "s", $username);
+        mysqli_stmt_execute($uquery);
+        $usrresult = mysqli_stmt_get_result($uquery);
+	if (mysqli_fetch_assoc($usrresult) == Null)
 	{
 		return false;
 		exit();
 	}
+	mysqli_stmt_close($uquery);
 	// check password
-	$pwd = "select password from users where username ='$username'";
-	$pquery = mysqli_query($mydb,$pwd);
-	$pwdquery = mysqli_fetch_assoc($pquery);
+	$pwd = "select password from users where username = ?;";
+	$pquery = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($pquery, $pwd)
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($pquery, "s", $username);
+        mysqli_stmt_execute($pquery);
+        $pwdresult = mysqli_stmt_get_result($pquery);
+	$pwdquery = mysqli_fetch_assoc($pwdresult);
 	foreach($pwdquery as $key => $value)
 	{
-		if ($password !== $value)
+
+		if (password_verify($password, $value) == false)
         	{
 			return false;
 			exit();
 		}
 	}
-        return true;
+	mysqli_stmt_close($pquery);
+        return "login successful;
 }
 
 function requestProcessor($request)
