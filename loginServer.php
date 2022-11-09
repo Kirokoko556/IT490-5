@@ -10,7 +10,7 @@ function doLogin($username,$password)
 	$mydb = new mysqli('127.0.0.1','carter','abcde','IT490');
 	$usr = "select username from users where username = ?;";
 	$uquery = mysqli_stmt_init($mydb);
-        if(!mysqli_stmt_prepare($uquery, $usr)
+        if(!mysqli_stmt_prepare($uquery, $usr))
         {
                 return false;
                 exit();
@@ -27,7 +27,7 @@ function doLogin($username,$password)
 	// check password
 	$pwd = "select password from users where username = ?;";
 	$pquery = mysqli_stmt_init($mydb);
-        if(!mysqli_stmt_prepare($pquery, $pwd)
+        if(!mysqli_stmt_prepare($pquery, $pwd))
         {
                 return false;
                 exit();
@@ -46,7 +46,7 @@ function doLogin($username,$password)
 		}
 	}
 	mysqli_stmt_close($pquery);
-        return "login successful;
+        return "login successful";
 }
 
 function requestProcessor($request)
