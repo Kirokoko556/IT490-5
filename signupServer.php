@@ -11,7 +11,7 @@ function doSignup($username,$password,$firstname,$lastname,$email)
 	// check username
 	$usr = "select username from users where username = ?;";
 	$uquery = mysqli_stmt_init($mydb);
-	if(!mysqli_stmt_prepare($uquery, $usr)
+	if(!mysqli_stmt_prepare($uquery, $usr))
 	{
 		return false;
 		exit();
@@ -28,14 +28,14 @@ function doSignup($username,$password,$firstname,$lastname,$email)
 	// check email
 	$e = "select email from users where email = ?;";
 	$equery = mysqli_stmt_init($mydb);
-	if(!mysqli_stmt_prepare($equery, $e)
+	if(!mysqli_stmt_prepare($equery, $e))
         {
                 return false;
                 exit();
         }
         mysqli_stmt_bind_param($equery, "s", $email);
         mysqli_stmt_execute($equery);
-	$emailquery = mysqli_fetch_assoc($equery);
+	$emailresult = mysqli_stmt_get_result($equery);
 	if (mysqli_fetch_assoc($emailresult) !== Null)
         {
 		return false;
@@ -46,13 +46,13 @@ function doSignup($username,$password,$firstname,$lastname,$email)
 	$hashedpassword = password_hash($password, PASSWORD_DEFAULT);
 	// insert parameters into users table
 	$insert = "insert into users (username, password, firstName, lastName, email) values(?,?,?,?,?);";
-	$insertstmt = mysqli_stmt_init($db);
-	if (!mysqli_stmt_prepare($insertstmt, $insert)
+	$insertstmt = mysqli_stmt_init($mydb);
+	if (!mysqli_stmt_prepare($insertstmt, $insert))
 	{
 		return false;
 		exit();
 	}
-	mysqli_bind_param($insertstmt, "sssss", $username, $hashedpassword, $firstname, $lastname, $email);
+	mysqli_stmt_bind_param($insertstmt, "sssss", $username, $hashedpassword, $firstname, $lastname, $email);
 	mysqli_stmt_execute($insertstmt);
 	mysqli_stmt_close($insertstmt);
 	return "registration successful";
@@ -68,7 +68,7 @@ function requestProcessor($request)
   }
   switch ($request['type'])
   {
-    case "login":
+    case "register":
       return doSignup($request["username"],$request["password"], $request["firstname"], $request["lastname"], $request["email"]);
     case "validate_session":
       return doValidate($request['sessionId']);
