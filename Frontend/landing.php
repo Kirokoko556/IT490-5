@@ -10,7 +10,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Employee Page</title>
+    <title>Landing Page</title>
     <style>
     	body{
       margin: 0;
@@ -116,7 +116,7 @@
     </style>
 </head>
 <body>
-<h1>Employee</h1>
+<h1>Welcome to CNAZ Streaming Movie and Show Match</h1>
 <a href='logout.php'>Logout</a>;
 </body>
 </html>
