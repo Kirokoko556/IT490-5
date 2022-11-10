@@ -1,2 +1,12 @@
-Logging System: Youtube- Christian Augusto Romero Goyzueta II: Rsyslog Server and Client - Ubuntu Server 20.04
-Nagios: Youtube - Happy Ghost: How to Install and configure Nagios Monitoring Server on Ubuntu
+Logging System: Youtube-Christian Augusto Romero Goyzueta II: Rsyslog Server and Client - Ubuntu Server 20.04
+
+Nagios: Youtube-Happy Ghost: How to Install and configure Nagios Monitoring Server on Ubuntu
+
+OSSIM: Youtube-Atul Awasthy: How to Download, Install and
+configure the OSSIM by Alienware
+
+Password Hashing: Youtube-Dani Krossing: 43:Hashing and de-hashing data 
+using PHP | PHP tutuorial | Learn PHP programming
+
+Discussion Forum: Youtube-Aaron Jack: Let's code a Forum App in 5
+minutes - HTML, CSS, and JavaScript
