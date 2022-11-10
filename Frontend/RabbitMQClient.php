@@ -29,10 +29,21 @@ echo "client received response: ".PHP_EOL;
 print_r($response);
 echo "\n\n";
 if ($response=='true') {
-  header('Location: Frontend/employee.php');
+  header('Location: employee.php');
 }
 else {
-  header('Location: Frontend/login.php');
+  header('Location: login.php');
+}
+
+function is_logged_in($redirect= false, $destination="login.php") 
+{
+  $isLoggedIn= isset($_SESSION["username"]);
+  if ($redirect && !$isLoggedIn) {
+    flash("You need to be logged in'");
+    die(header("Location: $destination")); 
+  }
+  return $isLoggedIn;
+  }
 }
 echo $argv[0]." END".PHP_EOL;
 
