@@ -28,6 +28,8 @@ $response = $client->send_request($request);
 echo "client received response: ".PHP_EOL;
 print_r($response);
 echo "\n\n";
-
+if ($response=='true'($_SESSION['loggedin'])) {
+  header('Location: Frontend/employee.php');
+}
 echo $argv[0]." END".PHP_EOL;
 
