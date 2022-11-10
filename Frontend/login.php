@@ -110,8 +110,8 @@
 <body>
   <script src="Frontend/index.html" type="module"></script>
     <div class="center">
-        <h1>Welcome to CNAZ Weather on Demand!</h1>
-        <form method="post" action= "../testRabbitMQClient.php">
+        <h1>Login</h1>
+        <form method="post" action= "RabbitMQClient.php">
 
                 <div class="txt_field">
                 <input type="text" name="LoginInfo" id="LoginInfo" required>

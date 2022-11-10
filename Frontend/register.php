@@ -124,7 +124,7 @@
     <div class="center">
         <h1>Create a new account</h1>
 		<!--- need to ask for the following items: Admin	Username	Email	Password	First Name	Last Name --->
-        <form method="post" action= "functions.php">
+        <form method="post" action= "registerServer.php">
                 <div class="txt_field">
                 <input type="text" name="firstname" id="firstname" required>
                 <label>Please enter your first name.</label>
