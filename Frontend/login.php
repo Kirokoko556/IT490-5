@@ -108,7 +108,7 @@
     </style>
 </head>
 <body>
-  <script src="Frontend/index.js" type="module"></script>
+  <script src="Frontend/index.html" type="module"></script>
     <div class="center">
         <h1>Welcome to CNAZ Weather on Demand!</h1>
         <form method="post" action= "../testRabbitMQClient.php">
