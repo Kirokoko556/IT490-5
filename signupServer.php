@@ -55,7 +55,7 @@ function doSignup($username,$password,$firstname,$lastname,$email)
 	mysqli_stmt_bind_param($insertstmt, "sssss", $username, $hashedpassword, $firstname, $lastname, $email);
 	mysqli_stmt_execute($insertstmt);
 	mysqli_stmt_close($insertstmt);
-	return "registration successful";
+	return true;
 }
 
 function requestProcessor($request)

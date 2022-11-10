@@ -46,7 +46,7 @@ function doLogin($username,$password)
 		}
 	}
 	mysqli_stmt_close($pquery);
-        return "login successful";
+        return true;
 }
 
 function requestProcessor($request)
