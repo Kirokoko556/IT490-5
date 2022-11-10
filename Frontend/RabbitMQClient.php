@@ -35,7 +35,7 @@ else {
   header('Location: login.php');
 }
 
-function is_logged_in($redirect= false, $destination="login.php") 
+/*function is_logged_in($redirect= false, $destination="login.php") 
 {
   $isLoggedIn= isset($_SESSION["username"]);
   if ($redirect && !$isLoggedIn) {
@@ -45,5 +45,6 @@ function is_logged_in($redirect= false, $destination="login.php")
   return $isLoggedIn;
   }
 }
+*/
 echo $argv[0]." END".PHP_EOL;
 
