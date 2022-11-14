@@ -4,10 +4,11 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+$mydb = new mysqli('127.0.0.1','carter','abcde','IT490');
+
 function doSignup($username,$password,$firstname,$lastname,$email)
 {
-        // connect to database
-        $mydb = new mysqli('127.0.0.1','carter','abcde','IT490');
+	global $mydb;
         // check username
         $usr = "select username from users where username = ?;";
         $uquery = mysqli_stmt_init($mydb);
@@ -62,8 +63,8 @@ function doSignup($username,$password,$firstname,$lastname,$email)
 
 function doLogin($username,$password)
 {
+	global $mydb;
 	// lookup username in database
-	$mydb = new mysqli('127.0.0.1','carter','abcde','IT490');
 	$usr = "select username from users where username = ?;";
 	$uquery = mysqli_stmt_init($mydb);
         if(!mysqli_stmt_prepare($uquery, $usr))
@@ -105,6 +106,75 @@ function doLogin($username,$password)
         return true;
 }
 
+function getMovie($title)
+{
+	global $mydb;
+	$mv = "select title from moviesAndEpisodes where title = ?;";
+        $mquery = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($mquery, $mv))
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($mquery, "s", $title);
+        mysqli_stmt_execute($mquery);
+	$movieresult = mysqli_stmt_get_result($mquery);
+	mysqli_stmt_close($mquery);
+	if (mysqli_fetch_assoc($movieresult) == Null)
+	{
+		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+		if (isset($argv[1]))
+		{
+  			$msg = $argv[1];
+		}
+		else
+		{
+  			$msg = "test message";
+		}
+
+		$request = array();
+		$request['type'] = "movie";
+		$request['title'] = $title;
+		$request['message'] = $msg;
+		$response = $client->send_request($request);
+		if($response == false)
+		{
+			return false;
+			exit();
+		}
+		list($title, $country, $type, $service, $genre) = $response;
+		$insert = "insert into moviesAndEpisodes (title, country, type, service, genre) values(?,?,?,?,?);";
+        	$insertstmt = mysqli_stmt_init($mydb);
+        	if(!mysqli_stmt_prepare($insertstmt, $insert))
+        	{
+                	return false;
+                	exit();
+        	}
+        	mysqli_stmt_bind_param($insertstmt, "sssss", $title, $country, $type, $service, $genre);
+        	mysqli_stmt_execute($insertstmt);
+		mysqli_stmt_close($insertstmt);
+
+	}
+	$moviedata = "select * from moviesAndEpisodes where title  = ?;";
+        $mdquery = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($mdquery, $moviedata))
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($mdquery, "s", $title);
+        mysqli_stmt_execute($mdquery);
+        $mdresult = mysqli_stmt_get_result($mdquery);
+	$mfetch = mysqli_fetch_assoc($mdresult);
+	$mvarray = array();
+	foreach($mfetch as $key => $value)
+	{
+		array_push($mvarray, $value);
+	}
+	mysqli_stmt_close($mdquery);
+	return $mvarray;
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -120,7 +190,9 @@ function requestProcessor($request)
     case "register":
       return doSignup($request["username"],$request["password"], $request["firstname"], $request["lastname"], $request["email"]);
     case "validate_session":
-      return doValidate($request['sessionId']);
+	 return doValidate($request['sessionId']);
+    case "api":
+	 return getMovie($request['title']);
   }
 }
 
