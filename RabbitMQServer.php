@@ -4,6 +4,7 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+//establishes connection to the database.
 $mydb = new mysqli('127.0.0.1','carter','abcde','IT490');
 
 function doSignup($username,$password,$firstname,$lastname,$email)
@@ -57,7 +58,8 @@ function doSignup($username,$password,$firstname,$lastname,$email)
         mysqli_stmt_bind_param($insertstmt, "sssss", $username, $hashedpassword, $firstname, $lastname, $email);
         mysqli_stmt_execute($insertstmt);
 	mysqli_stmt_close($insertstmt);
-	$usertable = "create table ? (services varchar(255));";
+	//creates friends table for the user that was just signed up
+	$usertable = "create table ? (friendUsername varchar(255) not null, friendFirstname varchar (255) not null, FriendLastname varchar(255) not null, primary key (friendUsername);";
 	$createstmt = mysqli_stmt_init($mydb);
         if (!mysqli_stmt_prepare($createstmt, $usertable))
         {
@@ -91,7 +93,7 @@ function doLogin($username,$password)
 		exit();
 	}
 	mysqli_stmt_close($uquery);
-	// check password
+	// check password for that user
 	$pwd = "select password from users where username = ?;";
 	$pquery = mysqli_stmt_init($mydb);
         if(!mysqli_stmt_prepare($pquery, $pwd))
@@ -105,7 +107,7 @@ function doLogin($username,$password)
 	$pwdquery = mysqli_fetch_assoc($pwdresult);
 	foreach($pwdquery as $key => $value)
 	{
-
+		//compares password user enetered to the dehashed password that user has in the database.
 		if (password_verify($password, $value) == false)
         	{
 			return false;
@@ -116,21 +118,21 @@ function doLogin($username,$password)
         return true;
 }
 
-function getMovie($title)
+function getSong($songID)
 {
 	global $mydb;
-	$mv = "select title from moviesAndEpisodes where title = ?;";
-        $mquery = mysqli_stmt_init($mydb);
-        if(!mysqli_stmt_prepare($mquery, $mv))
+	$song = "select songID from music where songID = ?;";
+        $songquery = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($songquery, $song))
         {
                 return false;
                 exit();
         }
-        mysqli_stmt_bind_param($mquery, "s", $title);
-        mysqli_stmt_execute($mquery);
-	$movieresult = mysqli_stmt_get_result($mquery);
-	mysqli_stmt_close($mquery);
-	if (mysqli_fetch_assoc($movieresult) == Null)
+        mysqli_stmt_bind_param($songquery, "s", $songID);
+        mysqli_stmt_execute($songquery);
+	$songresult = mysqli_stmt_get_result($songquery);
+	mysqli_stmt_close($songquery);
+	if (mysqli_fetch_assoc($songresult) == Null)
 	{
 		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
 		if (isset($argv[1]))
@@ -143,8 +145,8 @@ function getMovie($title)
 		}
 
 		$request = array();
-		$request['type'] = "movie";
-		$request['title'] = $title;
+		$request['type'] = "songapi";
+		$request['songID'] = $songID;
 		$request['message'] = $msg;
 		$response = $client->send_request($request);
 		if($response == false)
@@ -152,36 +154,36 @@ function getMovie($title)
 			return false;
 			exit();
 		}
-		list($title, $country, $type, $service, $genre) = $response;
-		$insert = "insert into moviesAndEpisodes (title, country, type, service, genre) values(?,?,?,?,?);";
+		list($songID, $title, $artist, $genre) = $response;
+		$insert = "insert into music (songID, songTitle, artist, genre) values(?,?,?,?);";
         	$insertstmt = mysqli_stmt_init($mydb);
         	if(!mysqli_stmt_prepare($insertstmt, $insert))
         	{
                 	return false;
                 	exit();
         	}
-        	mysqli_stmt_bind_param($insertstmt, "sssss", $title, $country, $type, $service, $genre);
+        	mysqli_stmt_bind_param($insertstmt, "ssss", $songID, $title, $artist, $genre);
         	mysqli_stmt_execute($insertstmt);
 		mysqli_stmt_close($insertstmt);
 	}
-	$moviedata = "select * from moviesAndEpisodes where title  = ?;";
-        $mdquery = mysqli_stmt_init($mydb);
-        if(!mysqli_stmt_prepare($mdquery, $moviedata))
+	$songdata = "select * from music where songID  = ?;";
+        $sdquery = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($sdquery, $songdata))
         {
         	return false;
                 exit();
         }
-        mysqli_stmt_bind_param($mdquery, "s", $title);
-        mysqli_stmt_execute($mdquery);
-        $mdresult = mysqli_stmt_get_result($mdquery);
-	$mfetch = mysqli_fetch_assoc($mdresult);
-	$mvarray = array();
-	foreach($mfetch as $key => $value)
+        mysqli_stmt_bind_param($sdquery, "s", $songID);
+        mysqli_stmt_execute($sdquery);
+        $sdresult = mysqli_stmt_get_result($sdquery);
+	$sfetch = mysqli_fetch_assoc($sdresult);
+	$songarray = array();
+	foreach($sfetch as $key => $value)
 	{
-		array_push($mvarray, $value);
+		array_push($songarray, $value);
 	}
-	mysqli_stmt_close($mdquery);
-	return $mvarray;
+	mysqli_stmt_close($sdquery);
+	return $songarray;
 }
 
 function genreRecommendation($genre)
@@ -223,74 +225,147 @@ function genreRecommendation($genre)
                 }
 
 	}
-	
-	return;
+
 }
 
-function addService($username, $service)
+function addFriend($username, $firendusername, $firstname, $lastname)
 {
-	global $mydb
-	$select = "select services from ? where services = ?;";
+	global $mydb;
+	//checks to see if the user is already friends with the other user
+	$select = "select friendUsername from ? where friendUsername = ?;";
         $selectstmt = mysqli_stmt_init($mydb);
         if(!mysqli_stmt_prepare($selectstmt, $select))
         {
                 return false;
                 exit();
         }
-        mysqli_stmt_bind_param($selectstmt, "ss", $username, $service);
+        mysqli_stmt_bind_param($selectstmt, "ss", $username, $friendusername);
         mysqli_stmt_execute($selectstmt);
 	$selectresult = mysqli_stmt_get_result($selectstmt);
 	$selectassoc = mysqli_fetch_assoc($selectresult);
 	mysqli_stmt_close($selectstmt);
 	if($selectassoc == Null)
 	{
-		$insert = "insert into ? (services) values(?);";
+		//adds friend to the users friend list
+		$insert = "insert into ? (friendUsernname, friendFirstname, friendLastname) values(?, ?, ?);";
 		$insertstmt = mysqli_stmt_init($mydb);
 		if(!mysqli_stmt_prepare($insertstmt, $insert))
         	{
                 	return false;
                 	exit();
         	}
-        	mysqli_stmt_bind_param($insertstmt, "ss", $username, $service);
+        	mysqli_stmt_bind_param($insertstmt, "ssss", $username, $friendusername, $firstname, $lastname);
         	mysqli_stmt_execute($insertstmt);
         	mysqli_stmt_close($insertstmt);
 		return true;
 	}
+	//returns false if user is already friends with the user.
 	return false;
 
 }
 
-function removeService($username, $service)
+function removeFriend($username, $friendusername)
 {
-	global $mydb
-	$select = "select service from ? where service = ?;";
+	global $mydb;
+	//searches for friend in that user's friend table.
+	$select = "select friendUsername from ? where friendUsername = ?;";
         $selectstmt = mysqli_stmt_init($mydb);
         if(!mysqli_stmt_prepare($selectstmt, $select))
         {
                 return false;
                 exit();
         }
-        mysqli_stmt_bind_param($selectstmt, "ss", $username, $service);
+        mysqli_stmt_bind_param($selectstmt, "ss", $username, $friendusername);
         mysqli_stmt_execute($selectstmt);
 	$selectresult = mysqli_stmt_get_result($selectstmt);
         $selectassoc = mysqli_fetch_assoc($selectresult);
 	mysqli_stmt_close($selectstmt);
+	//return false if the user is not friends with the user it is defreinding
         if($selectassoc == Null)
         {
 		return false;
 		exit();
 	}
-	$delete = "delete from ? where services = ?;";
+	//removes friend from user's freind list
+	$delete = "delete from ? where friendUsername = ?;";
         $deletestmt = mysqli_stmt_init($mydb);
         if(!mysqli_stmt_prepare($deletestmt, $delete))
         {
         	return false;
                 exit();
         }
-        mysqli_stmt_bind_param($deletestmt, "ss", $username, $service);
+        mysqli_stmt_bind_param($deletestmt, "ss", $username, $friendusername);
         mysqli_stmt_execute($deletestmt);
         mysqli_stmt_close($deletestmt);
         return true;
+
+}
+
+function getConcert($concertTitle)
+{
+	global $mydb;
+        $concert = "select concertTitle from concerts where concertTitle = ?;";
+        $concertquery = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($concertquery, $concert))
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($concertquery, "s", $concertTitle);
+        mysqli_stmt_execute($concertquery);
+        $concertresult = mysqli_stmt_get_result($concertquery);
+        mysqli_stmt_close($concertquery);
+        if (mysqli_fetch_assoc($movieresult) == Null)
+        {
+                $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+                if (isset($argv[1]))
+                {
+                        $msg = $argv[1];
+                }
+                else
+		{
+                        $msg = "test message";
+                }
+                $request = array();
+                $request['type'] = "concertapi";
+                $request['title'] = $concertTitle;
+                $request['message'] = $msg;
+                $response = $client->send_request($request);
+                if($response == false)
+                {
+                        return false;
+                        exit();
+                }
+		list($concertTitle, $artist, $location, $datetime) = $response;
+                $insert = "insert into concerts (concertTitle, artist, location, dateAndTime) values(?,?,?,?);";
+                $insertstmt = mysqli_stmt_init($mydb);
+                if(!mysqli_stmt_prepare($insertstmt, $insert))
+                {
+                        return false;
+                        exit();
+                }
+                mysqli_stmt_bind_param($insertstmt, "ssss", $concertTitle, $artist, $locaton, $datetime);
+                mysqli_stmt_execute($insertstmt);
+                mysqli_stmt_close($insertstmt);
+        }
+	$concertdata = "select * from concerts where concertTitle  = ?;";
+        $cdquery = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($cdquery, $concertdata))
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($cdquery, "s", $concertTitle);
+        mysqli_stmt_execute($cdquery);
+        $cdresult = mysqli_stmt_get_result($cdquery);
+        $cfetch = mysqli_fetch_assoc($cdresult);
+        $concertarray = array();
+        foreach($cfetch as $key => $value)
+        {
+                array_push($concertarray, $value);
+        }
+        mysqli_stmt_close($cdquery);
+        return $concertarray;
 
 }
 
@@ -310,14 +385,16 @@ function requestProcessor($request)
       return doSignup($request["username"],$request["password"], $request["firstname"], $request["lastname"], $request["email"]);
     case "validate_session":
       return doValidate($request['sessionId']);
-    case "title":
-      return getMovie($request['title']);
+    case "song":
+      return getSong($request['id']);
     case "genre":
       return genreRecommendation($request['genre']);
-    case "add service":
-      return addService($request['username'], $request['service']);
-    case "remove service":
-      return removeService($request['username'], $request['service']);
+    case "add friend":
+      return addFriend($request['username'],$request['friendusername'],  $request['firstname'], $request['lastname']);
+    case "remove friend":
+      return removeFriend($request['username'], $request['friendusername']);
+    case "concert":
+      return getConcert($request['title']);
   }
 }
 
