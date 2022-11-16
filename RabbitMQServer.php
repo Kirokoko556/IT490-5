@@ -56,7 +56,17 @@ function doSignup($username,$password,$firstname,$lastname,$email)
         }
         mysqli_stmt_bind_param($insertstmt, "sssss", $username, $hashedpassword, $firstname, $lastname, $email);
         mysqli_stmt_execute($insertstmt);
-        mysqli_stmt_close($insertstmt);
+	mysqli_stmt_close($insertstmt);
+	$usertable = "create table ? (services varchar(255));";
+	$createstmt = mysqli_stmt_init($mydb);
+        if (!mysqli_stmt_prepare($createstmt, $usertable))
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($createstmt, "s", $username);
+        mysqli_stmt_execute($createstmt);
+        mysqli_stmt_close($createstmt);
         return true;
 }
 
@@ -153,13 +163,12 @@ function getMovie($title)
         	mysqli_stmt_bind_param($insertstmt, "sssss", $title, $country, $type, $service, $genre);
         	mysqli_stmt_execute($insertstmt);
 		mysqli_stmt_close($insertstmt);
-
 	}
 	$moviedata = "select * from moviesAndEpisodes where title  = ?;";
         $mdquery = mysqli_stmt_init($mydb);
         if(!mysqli_stmt_prepare($mdquery, $moviedata))
         {
-                return false;
+        	return false;
                 exit();
         }
         mysqli_stmt_bind_param($mdquery, "s", $title);
@@ -173,6 +182,116 @@ function getMovie($title)
 	}
 	mysqli_stmt_close($mdquery);
 	return $mvarray;
+}
+
+function genreRecommendation($genre)
+{
+	global $mydb;
+        $g = "select title, service from moviesAndEpisodes where genre = ?;";
+        $gquery = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($gquery, $g))
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($gquery, "s", $genre);
+        mysqli_stmt_execute($gquery);
+	$genreresult = mysqli_stmt_get_result($gquery);
+	$genreassoc = mysqli_fetch_assoc($genreresult);
+	mysqli_stmt_close($gquery);
+        if ($genreassoc == Null)
+	{
+		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+                if (isset($argv[1]))
+                {
+                        $msg = $argv[1];
+                }
+                else
+                {
+                        $msg = "test message";
+                }
+
+                $request = array();
+                $request['type'] = "genre";
+                $request['title'] = $genre;
+                $request['message'] = $msg;
+                $response = $client->send_request($request);
+                if($response == false)
+                {
+                        return false;
+                        exit();
+                }
+
+	}
+	
+	return;
+}
+
+function addService($username, $service)
+{
+	global $mydb
+	$select = "select services from ? where services = ?;";
+        $selectstmt = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($selectstmt, $select))
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($selectstmt, "ss", $username, $service);
+        mysqli_stmt_execute($selectstmt);
+	$selectresult = mysqli_stmt_get_result($selectstmt);
+	$selectassoc = mysqli_fetch_assoc($selectresult);
+	mysqli_stmt_close($selectstmt);
+	if($selectassoc == Null)
+	{
+		$insert = "insert into ? (services) values(?);";
+		$insertstmt = mysqli_stmt_init($mydb);
+		if(!mysqli_stmt_prepare($insertstmt, $insert))
+        	{
+                	return false;
+                	exit();
+        	}
+        	mysqli_stmt_bind_param($insertstmt, "ss", $username, $service);
+        	mysqli_stmt_execute($insertstmt);
+        	mysqli_stmt_close($insertstmt);
+		return true;
+	}
+	return false;
+
+}
+
+function removeService($username, $service)
+{
+	global $mydb
+	$select = "select service from ? where service = ?;";
+        $selectstmt = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($selectstmt, $select))
+        {
+                return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($selectstmt, "ss", $username, $service);
+        mysqli_stmt_execute($selectstmt);
+	$selectresult = mysqli_stmt_get_result($selectstmt);
+        $selectassoc = mysqli_fetch_assoc($selectresult);
+	mysqli_stmt_close($selectstmt);
+        if($selectassoc == Null)
+        {
+		return false;
+		exit();
+	}
+	$delete = "delete from ? where services = ?;";
+        $deletestmt = mysqli_stmt_init($mydb);
+        if(!mysqli_stmt_prepare($deletestmt, $delete))
+        {
+        	return false;
+                exit();
+        }
+        mysqli_stmt_bind_param($deletestmt, "ss", $username, $service);
+        mysqli_stmt_execute($deletestmt);
+        mysqli_stmt_close($deletestmt);
+        return true;
+
 }
 
 function requestProcessor($request)
@@ -190,9 +309,15 @@ function requestProcessor($request)
     case "register":
       return doSignup($request["username"],$request["password"], $request["firstname"], $request["lastname"], $request["email"]);
     case "validate_session":
-	 return doValidate($request['sessionId']);
-    case "api":
-	 return getMovie($request['title']);
+      return doValidate($request['sessionId']);
+    case "title":
+      return getMovie($request['title']);
+    case "genre":
+      return genreRecommendation($request['genre']);
+    case "add service":
+      return addService($request['username'], $request['service']);
+    case "remove service":
+      return removeService($request['username'], $request['service']);
   }
 }
 
