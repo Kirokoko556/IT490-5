@@ -110,30 +110,76 @@
       color:#9370DB;
     }
     </style>
-</head>
+    <!-- code referenced from https://github.com/aj-4/5m-forum/blob/main/index.html---> 
+ </h4>
+</h4
 <body>
-    <div class="top bar">
-   	 <h1>Discussion Forum </h1>
-    </div>
-    <div class="header">
-	 <h4 class="title">
-	 	Movies
-	</h4>
-	<div class="bottom">
-		<p class="timestamp">
-			11/9/2022
-		</p>
-		<p class="comment-count">
-			0 comments
-		</p>
-	</div>
-     </div>
-    <textarea></textarea>
-    <button> add comment </button>
-    <div class="comments">
-	<div class="comment">
-		
-		<p class"user">
-    <script src="discussion.js"></script>
+  <div class="top-bar">
+      <h1>
+          My Forum
+      </h1>
+  </div>
+  <div class="main">
+      <ol>
+      </ol>
+  </div>
+  <script src="data.js"></script>
+  <script>
+      console.log(threads);
+      var container = document.querySelector('ol');
+      for (let thread of threads) {
+          var html = `
+          <li class="row">
+              <a href="/thread.html?${thread.id}">
+                  <h4 class="title">
+                      ${thread.title}
+                  </h4>
+                  <div class="bottom">
+                      <p class="timestamp">
+                          ${new Date(thread.date).toLocaleString()}
+                      </p>
+                      <p class="comment-count">
+                          ${thread.comments.length} comments
+                      </p>
+                  </div>
+              </a>
+          </li>
+          `
+          container.insertAdjacentHTML('beforeend', html);
+      }
+  </script>
+  <style>
+      body {
+          margin: 10px 60px;
+      }
+      a {
+          text-decoration: none;
+          color: black;
+      }
+      h1, h4, ol {
+          margin: 0;
+      }
+      p {
+          margin: 5px 0;
+      }
+      .top-bar {
+          background-color: skyblue;
+          padding: 0 40px;
+      }
+      .main {
+          background-color: #F6F6EF;
+          padding: 10px 15px;
+      }
+      .row {
+          padding: 5px 0;
+      }
+      .bottom {
+          display: flex;
+          color: grey;
+          font-size: 12px;
+      }
+      .timestamp {
+          padding-right: 10px;
+      }
+  </style>
 </body>
-</html>
